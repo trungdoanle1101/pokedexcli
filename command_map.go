@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func commandMap(cfg *config) error {
+func commandMap(cfg *config, options ...string) error {
 	if cfg == nil {
 		return fmt.Errorf("config cannot be nil")
 	}
@@ -24,7 +24,7 @@ func commandMap(cfg *config) error {
 	return nil
 }
 
-func commandMapb(cfg *config) error {
+func commandMapb(cfg *config, options ...string) error {
 	if cfg == nil {
 		return fmt.Errorf("config cannot be nil")
 	}
