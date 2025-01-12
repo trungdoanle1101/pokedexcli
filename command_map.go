@@ -1,83 +1,49 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/http"
 )
 
-const locationAreaUrl = "https://pokeapi.co/api/v2/location-area"
-
-func commandMap(config *CliConfig) error {
-	var url string
-	if config == nil || config.Next == nil || *config.Next == "" {
-		url = locationAreaUrl
-	} else {
-		url = *config.Next
+func commandMap(cfg *config) error {
+	if cfg == nil {
+		return fmt.Errorf("config cannot be nil")
 	}
 
-	res, err := http.Get(url)
-
+	locationsResp, err := cfg.pokeapiClient.ListLocations(cfg.nextLocationsURL)
 	if err != nil {
-		return fmt.Errorf("error fetching location-area data: %w", err)
+		return err
 	}
 
-	defer res.Body.Close()
-
-	if res.StatusCode > 299 {
-		return fmt.Errorf("fetching location-area data failed with status code: %v", res.Status)
+	for _, loc := range locationsResp.Results {
+		fmt.Println(loc.Name)
 	}
 
-	var lar LocationAreaResponse
-	decoder := json.NewDecoder(res.Body)
-	err = decoder.Decode(&lar)
-	if err != nil {
-		return fmt.Errorf("error decoding response: %w", err)
-	}
-
-	for _, la := range lar.Results {
-		fmt.Println(la.Name)
-	}
-
-	config.Previous = lar.Previous
-	config.Next = lar.Next
+	cfg.nextLocationsURL = locationsResp.Next
+	cfg.prevLocationsURL = locationsResp.Previous
 
 	return nil
 }
 
-func commandMapb(config *CliConfig) error {
-
-	if config == nil || config.Previous == nil || *config.Previous == "" {
-		fmt.Println("you're on the first page")
-		return nil
+func commandMapb(cfg *config) error {
+	if cfg == nil {
+		return fmt.Errorf("config cannot be nil")
 	}
 
-	url := *config.Previous
-	res, err := http.Get(url)
+	if cfg.prevLocationsURL == nil {
+		return fmt.Errorf("you're on the first page")
+	}
 
+	locationsResp, err := cfg.pokeapiClient.ListLocations(cfg.prevLocationsURL)
 	if err != nil {
-		return fmt.Errorf("error fetching location-area data: %w", err)
+		return err
 	}
 
-	defer res.Body.Close()
-
-	if res.StatusCode > 299 {
-		return fmt.Errorf("fetching location-area data failed with status code: %v", res.Status)
+	for _, loc := range locationsResp.Results {
+		fmt.Println(loc.Name)
 	}
 
-	var lar LocationAreaResponse
-	decoder := json.NewDecoder(res.Body)
-	err = decoder.Decode(&lar)
-	if err != nil {
-		return fmt.Errorf("error decoding response: %w", err)
-	}
-
-	for _, la := range lar.Results {
-		fmt.Println(la.Name)
-	}
-
-	config.Previous = lar.Previous
-	config.Next = lar.Next
+	cfg.nextLocationsURL = locationsResp.Next
+	cfg.prevLocationsURL = locationsResp.Previous
 
 	return nil
 }
