@@ -1,5 +1,7 @@
 package pokedex
 
+import "fmt"
+
 type Pokedex struct {
 	dex map[string]Pokemon
 }
@@ -32,7 +34,7 @@ func NewPokemon(name string, baseExperience, height, weight int, stats []struct 
 		Stats:          stats,
 		Types:          types,
 	}
-	
+
 	return pokemon
 }
 
@@ -51,4 +53,10 @@ func (pd *Pokedex) Get(name string) (Pokemon, bool) {
 		return Pokemon{}, false
 	}
 	return pokemon, true
+}
+
+func (pd *Pokedex) Print() {
+	for name := range pd.dex {
+		fmt.Println(" - ", name)
+	}
 }

@@ -19,7 +19,7 @@ func NewClient(timeout time.Duration) Client {
 		httpClient: http.Client{
 			Timeout: timeout,
 		},
-		cache:   pokecache.NewCache(5 * time.Second),
+		cache:   pokecache.NewCache(5 * time.Minute),
 		pokedex: pokedex.NewPokedex(),
 	}
 }
