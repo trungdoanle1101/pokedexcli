@@ -17,3 +17,5 @@ type RespLocationArea struct {
 		} `json:"pokemon"`
 	} `json:"pokemon_encounters"`
 }
+
+
